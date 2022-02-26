@@ -32,6 +32,7 @@ Kermit uses an inuitive form built with [Inquirer.js](https://www.npmjs.com/pack
 * Includes an option to specify breaking changes
 * All fields are input validated
 * `git kermit` supports argument passthrough so flags like `--amend` and `-a` still work
+* Supports prekermit (precommit) hooks. If a prekermit hook fails, then kermit will not start the form. 
 
 ## Contributing
 This project is small, but plays an important role for teams that use conventional commits. Feel free to add issues or pull requests suggesting new functionality!
