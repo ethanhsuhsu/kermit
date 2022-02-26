@@ -29,7 +29,7 @@ Kermit uses an inuitive form built with [Inquirer.js](https://www.npmjs.com/pack
 
 ## Features
 * Automatically caches the last used commit scope (can be ignored by entering a space " " for the commit scope)
-* Includes an option to specify breaking changes
+* Breaking changes can be added with the `-b` flag
 * All fields are input validated
 * `git kermit` supports argument passthrough so flags like `--amend` and `-a` still work
 * Supports prekermit (precommit) hooks. If a prekermit hook fails, then kermit will not start the form. 

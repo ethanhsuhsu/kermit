@@ -12,7 +12,8 @@ if (args[args.length - 1] === "sh") {
     args.pop()
 }
 
-var useGit = args.includes("-g")
+const useGit = args.includes("-g");
+const isBreaking = args.includes("-b")
 
 if (useGit && args.includes("-m")) {
     console.error("Not allowed to specify a message when using git kermit")
@@ -35,46 +36,44 @@ function makeKermit() {
         suggestScope = fs.readFileSync(cacheDir + '/suggestScope.txt', 'utf8')
     } catch (err) {
     }
-
+    var questions=[{
+        prefix: '🐸',
+        name: 'type',
+        type: 'list',
+        message: 'Select commit type:',
+        choices: ['build', 'ci', 'chore', 'docs', 'feat', 'fix', 'perf', 'refactor', 'revert', 'style', 'test'],
+        default: 'feat',
+        pageSize: 11,
+        loop: false
+    }, {
+        prefix: '🐸',
+        name: 'scope',
+        type: 'input',
+        message: 'Enter an optional scope:',
+        default: suggestScope,
+        validate: (input) => {
+            if (input.match("[A-Z]")) return "Scope must be lowercase"
+            if (input.match("\\s[^a-z-s]")) return "No special chars except '-' are allowed"
+            return true;
+        }
+    }, {
+        prefix: '🐸', name: 'description', type: 'input', message: 'Enter description:', validate: (input) => {
+            if (input.length === 0) {
+                return 'Description cannot be empty';
+            }
+            if (input[0] === input[0].toUpperCase()) {
+                return 'Must start with lowercase letter';
+            }
+            return true;
+        }
+    }]
     inquirer
-        .prompt([{
-            prefix: '🐸',
-            name: 'type',
-            type: 'list',
-            message: 'Select commit type:',
-            choices: ['build', 'ci', 'chore', 'docs', 'feat', 'fix', 'perf', 'refactor', 'revert', 'style', 'test'],
-            default: 'feat',
-            pageSize: 11,
-            loop: false
-        }, {
-            prefix: '🐸',
-            name: 'scope',
-            type: 'input',
-            message: 'Enter an optional scope:',
-            default: suggestScope,
-            validate: (input) => {
-                if (input.match("[A-Z]")) return "Scope must be lowercase"
-                if (input.match("\\s[^a-z-s]")) return "No special chars except '-' are allowed"
-                return true;
-            }
-        }, {
-            prefix: '🐸', name: 'breaking', type: 'confirm', message: 'Includes breaking changes?', default: false
-        }, {
-            prefix: '🐸', name: 'description', type: 'input', message: 'Enter description:', validate: (input) => {
-                if (input.length === 0) {
-                    return 'Description cannot be empty';
-                }
-                if (input[0] === input[0].toUpperCase()) {
-                    return 'Must start with lowercase letter';
-                }
-                return true;
-            }
-        }])
+        .prompt(questions)
         .then((answers) => {
             if (answers.scope === ' ') answers.scope = ''
             if (answers.scope !== '') fs.writeFileSync(cacheDir + '/suggestScope.txt', answers.scope)
 
-            var message = answers.type + (answers.scope !== '' ? '(' + answers.scope + ')' : '') + (answers.breaking ? '!' : '') + ': ' + answers.description
+            var message = answers.type + (answers.scope !== '' ? '(' + answers.scope + ')' : '') + (isBreaking ? '!' : '') + ': ' + answers.description
             if (useGit) {
                 var cmd = "git commit -m \"" + message + "\" --no-verify"
                 for (let i = 1; i < args.length; args++) {
