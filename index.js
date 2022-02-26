@@ -15,14 +15,14 @@ if(useGit && args.includes("-m")) {
     console.error("Not allowed to specify a message when using git kermit")
     process.exit(1)
 }
-if(useGit && args[0] != "-g") {
+if(useGit && args[0] !== "-g") {
     console.error("-g must be specified as the first option")
     process.exit(1)
 }
 
 function makeKermit() {
-    var homeDir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
-    var cacheDir = process.platform == 'win32' ?  path.join(homeDir, 'AppData', 'kermit') : path.join(homeDir, '.kermit');
+    var homeDir = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+    var cacheDir = process.platform === 'win32' ?  path.join(homeDir, 'AppData', 'kermit') : path.join(homeDir, '.kermit');
 
     try {
       if (!fs.existsSync(cacheDir)) {
@@ -73,9 +73,9 @@ function makeKermit() {
             name: 'description',
             type: 'input',
             message: 'Enter description:',
-            validate: (input) => { if(input.length == 0) {
+            validate: (input) => { if(input.length === 0) {
                                     return 'Description cannot be empty';
-                                    } if(input[0] == input[0].toUpperCase()) {
+                                    } if(input[0] === input[0].toUpperCase()) {
                                     return 'Must start with lowercase letter';
                                     }
                                     return true;
@@ -84,10 +84,10 @@ function makeKermit() {
       ])
       .then((answers) => {
         if(answers.scope === ' ') answers.scope = ''
-        if(answers.scope != '') fs.writeFileSync(cacheDir + '/suggestScope.txt', answers.scope)
+        if(answers.scope !== '') fs.writeFileSync(cacheDir + '/suggestScope.txt', answers.scope)
 
         var message = answers.type
-        + (answers.scope != '' ? '(' + answers.scope + ')' : '' )
+        + (answers.scope !== '' ? '(' + answers.scope + ')' : '' )
         + (answers.breaking ? '!' : '')
         + ': ' + answers.description
         if(useGit) {
@@ -122,7 +122,7 @@ if(useGit) {
         console.error("HEAD is currently detached, cannot kermit")
         process.exit(1)
     }
-    if(result.staged.length == 0 && !(args.includes("--amend") || args.includes("-a"))) {
+    if(result.staged.length === 0 && !(args.includes("--amend") || args.includes("-a"))) {
         console.error("No changes are staged, cannot kermit")
         process.exit(1)
     }
