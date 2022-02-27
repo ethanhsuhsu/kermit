@@ -13,7 +13,7 @@ However, creating conventional commit messages from scratch can be a nightmare. 
 ## Installation
 Kermit is hosted as an npm package, so you will need to have [Node.js](https://nodejs.org/en/) installed beforehand.
 ```bash
-npm install git-kermit # Install git-kermit from npm
+npm install -g git-kermit # Install git-kermit from npm
 
 # Configure the git kermit alias
 git config --global alias.kermit '!sh -c '\''kermit -g "$0" "$@"'\'''
