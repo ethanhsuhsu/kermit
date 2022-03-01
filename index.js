@@ -118,7 +118,6 @@ if (useGit) {
                 console.log(`encountered stderr: ${stderr}`);
                 process.exit(1)
             }
-            console.log("hi")
             exec("git config core.hooksPath", (error, stdout, stderr) => {
                 const path = stdout === "" ? ".git/hooks" : stdout.substring(0, stdout.length - 1)
                 hook = project.substring(0, project.length - 1) + "/" + path  + "/pre-commit"
