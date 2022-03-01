@@ -36,7 +36,7 @@ function makeKermit() {
         suggestScope = fs.readFileSync(cacheDir + '/suggestScope.txt', 'utf8')
     } catch (err) {
     }
-    var questions=[{
+    var questions = [{
         prefix: '🐸',
         name: 'type',
         type: 'list',
@@ -109,7 +109,7 @@ if (useGit) {
             console.error("No changes are staged, cannot kermit")
             process.exit(1)
         }
-        exec("git rev-parse --show-toplevel", (error, stdout, stderr) => {
+        exec("git rev-parse --show-toplevel", (error, project, stderr) => {
             if (error) {
                 console.log(`encountered error: ${error.message}`)
                 process.exit(1)
@@ -118,21 +118,26 @@ if (useGit) {
                 console.log(`encountered stderr: ${stderr}`);
                 process.exit(1)
             }
-            hook = stdout.substring(0,stdout.length - 1) + "/.git/hooks/pre-commit"
-            if (fs.existsSync(hook)) {
-                exec("sh " + hook, (error, stdout, stderr) => {
-                    if (error || stderr) {
-                        console.log(`could not kermit because prekermit hook error encountered`)
-                        console.log(`error: ${error.message}`)
-                        console.log(`stderror: ${stderr}`);
-                        console.log(`stdout: ${stdout}`);
-                        process.exit(1)
-                    }
+            console.log("hi")
+            exec("git config core.hooksPath", (error, stdout, stderr) => {
+                const path = stdout === "" ? ".git/hooks" : stdout.substring(0, stdout.length - 1)
+                hook = project.substring(0, project.length - 1) + "/" + path  + "/pre-commit"
+                console.log(hook)
+                if (fs.existsSync(hook)) {
+                    exec("sh " + hook, (error, stdout, stderr) => {
+                        if (error || stderr) {
+                            console.log(`could not kermit because prekermit hook error encountered`)
+                            console.log(`error: ${error}`)
+                            console.log(`stderror: ${stderr}`);
+                            console.log(`stdout: ${stdout}`);
+                            process.exit(1)
+                        }
+                        makeKermit()
+                    });
+                } else {
                     makeKermit()
-                });
-            } else {
-                makeKermit()
-            }
+                }
+            })
         });
     });
 } else {
